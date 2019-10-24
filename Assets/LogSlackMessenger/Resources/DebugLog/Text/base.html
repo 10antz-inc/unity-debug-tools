@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>デバッグログ</title>
+    <style type="text/css">
+      .error {
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 4px;
+        border-color: red;
+        padding: 5px;
+        color: red;
+        font-weight: bold;
+      }
+      .warning {
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 4px;
+        border-color: orange;
+        padding: 5px;
+        color: orange;
+        font-weight: bold;
+      }
+      .normal {
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 4px;
+        border-color: black;
+        padding: 5px;
+        color: black;
+        font-weight: bold;
+      }
+      .drop_item {
+        color: black;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 4px;
+        border-color: gray;
+        padding: 5px;
+        font-weight: normal;
+        word-wrap: break-word;
+      }
+      .shortcut {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+      }
+      div#footer {
+      	background-color: #444;
+      	width:99vw;
+      	height: 20vh;
+      	position: fixed;
+      	bottom: 0px;
+      	padding: 5px;
+        left: 0px;
+        color: white;
+        word-wrap: break-word;
+        overflow-y: scroll;;
+      }
+      table.log_table {
+        width: 100%;
+        table-layout: fixed;
+        word-break: break-all;
+        word-wrap: break-all;
+      }
+      table.log_table tr:nth-child(even) {
+      	background: #eee;
+      }
+      td, th {
+        padding: 5px;
+      }
+      .wrapper {
+        width: 99vw;
+        height: 75vh;
+        overflow: auto;
+        position: fixed;
+        top: 0px;
+        padding: 10px;
+        left: 0px;
+      }
+      pre.log_pre {
+        width: 98%;
+        height: 100%;
+        padding: 6px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>
+    <script type="text/javascript">
+      function clickSummary() {
+        var log_elm = document.activeElement;
+        document.getElementById("footer").innerHTML = log_elm.innerHTML;
+        document.getElementById("footer").firstElementChild.setAttribute("class","log_pre")
+      }
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+        <h1>AllLogs</h1>
+        <table class="log_table">
+          $$ALL_LOGS$$
+        </table>
+    </div>
+    <div id="footer">
+        選択したログが表示されます
+    </div>
+  </body>
+</html>
