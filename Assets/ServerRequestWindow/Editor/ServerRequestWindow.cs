@@ -22,7 +22,7 @@ public class ServerRequestWindow : EditorWindow {
 
     [SerializeField]
     TreeViewState treeViewState;
-    SimpleTreeView _simpleTreeView;
+    ServerRequestLogArea _simpleTreeView;
     float _horizontalSplitHorizontalNorm = 0.5f;
     Rect _logAreaRect;
     Rect _dataAreaRect;
@@ -31,11 +31,12 @@ public class ServerRequestWindow : EditorWindow {
     float _horizontalSplitX;
     bool _resizingHorizontalSplitter = false;
     List<LogItem> _logItems = new List<LogItem>();
+
     public List<LogItem> LogItems {
         get{return _logItems;}
     }
     private string _dataString;
-    private Vector2 _scrollPos = Vector2.zero;
+    float _vSbarValue = 0f;
 
     [MenuItem("DebugTools/ServerRequestWindow")]
     public static void GetWindow() {
@@ -47,7 +48,7 @@ public class ServerRequestWindow : EditorWindow {
             treeViewState = new TreeViewState();
         
         _logItems = CreateTestData();
-        _simpleTreeView = new SimpleTreeView(treeViewState, this);
+        _simpleTreeView = new ServerRequestLogArea(treeViewState, this);
 
         ReshapeSubArea();
     }
@@ -56,6 +57,25 @@ public class ServerRequestWindow : EditorWindow {
         List<LogItem> ret = new List<LogItem>(){
             new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
             new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+            
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
+            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+
         };
         return ret;
     }
@@ -77,13 +97,14 @@ public class ServerRequestWindow : EditorWindow {
             EditorGUIUtility.systemCopyBuffer = _dataString;
         }
         DrawOutline(_dataAreaRect, 1.0f);
+        
         Rect dataAreaRect = new Rect();
         dataAreaRect.x = _dataAreaRect.x + _padding;
         dataAreaRect.y = _dataAreaRect.y + _padding;
         dataAreaRect.width = _dataAreaRect.width - _padding * 2f;
         dataAreaRect.height = _dataAreaRect.height - _padding * 2f;
         GUI.TextArea(dataAreaRect, _dataString);
-
+        
         Repaint();
     }
 

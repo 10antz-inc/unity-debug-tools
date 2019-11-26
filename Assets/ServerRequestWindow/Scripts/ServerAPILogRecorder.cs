@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System.Linq;
 
-public class ServerAPILogRecorder : MonoBehaviour
+public static class ServerAPILogRecorder
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public static string saveLogPath = "ServerRequestWindow/Logs/";
+    public static int maxLog = 100;
+    static string extension = ".log";
+
+    public static void RecordAPILog(string filename, string json) {
+        string path = Application.dataPath + saveLogPath + filename + extension;
+        File.Create(path);
+        File.WriteAllText(path,json);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public static FileInfo[] GetAllLogFileInfo() {
+        DirectoryInfo di = new DirectoryInfo(saveLogPath);
+        FileInfo[] files = di.GetFiles("*"+extension, SearchOption.TopDirectoryOnly);
+        return files;
+    }
+
+    public static string[] GetAllLogFilePath() {
+        return GetAllLogFileInfo().Select(f => f.FullName).ToArray();
     }
 }

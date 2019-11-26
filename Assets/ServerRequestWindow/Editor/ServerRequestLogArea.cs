@@ -5,11 +5,11 @@ using UnityEditor.IMGUI.Controls;
 using System.Linq;
 //using System;
 
-class SimpleTreeView : TreeView
+class ServerRequestLogArea : TreeView
 {
     ServerRequestWindow _parent;
 
-    public SimpleTreeView(TreeViewState treeViewState, ServerRequestWindow parent)
+    public ServerRequestLogArea(TreeViewState treeViewState, ServerRequestWindow parent)
         : base(treeViewState)
     {
         _parent = parent;
