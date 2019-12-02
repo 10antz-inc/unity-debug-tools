@@ -6,6 +6,7 @@ using UnityEditor.IMGUI.Controls;
 using System;
 using System.Runtime.Serialization.Json;
 using HC.Common;
+using UnityEditor.PackageManager.Requests;
 
 public class ServerRequestWindow : EditorWindow {
     public enum RequestType {
@@ -44,45 +45,46 @@ public class ServerRequestWindow : EditorWindow {
     }
 
     void OnEnable() {
+        Debug.Log("Enable ServerRequestWindow");
         if (treeViewState == null)
             treeViewState = new TreeViewState();
         
-        _logItems = CreateTestData();
+        ServerAPILogRecorder.ReadFile();
+
+        _logItems = CreateData();
         _simpleTreeView = new ServerRequestLogArea(treeViewState, this);
 
         ReshapeSubArea();
     }
 
-    List<LogItem> CreateTestData() {
-        List<LogItem> ret = new List<LogItem>(){
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-            
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
+    List<LogItem> CreateData() {
+        List<LogItem> ret = new List<LogItem>();
+        if (ServerAPILogRecorder._dataList == null) {
+            return ret;
+        }
+        
+        foreach (var data in ServerAPILogRecorder._dataList) {
+            ret.Add(new LogItem() {
+                date = DateTime.ParseExact(data.date,"yyyy/MM/dd HH:mm:ss",null),
+                url = data.url,
+                requestType = (RequestType)Enum.Parse(typeof(RequestType),data.type.ToString()),
+                jsonStr = data.json
+            });
+        }
 
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.POST, jsonStr = "{\"json\":\"data\"}"},
-            new LogItem(){date = new DateTime(2019,1,1,5,5,5), url = "game/info", requestType = RequestType.RESPONCE, jsonStr = "{\"Info\":{\"User\":{\"nickName\":\"TWICE好き\",\"level\":8,\"Link\":{\"Email\":[],\"Social\":[]}}},\"additional\":{\"progressMissionList\":[]}}"},
-
-        };
         return ret;
     }
 
     void OnGUI() {
         if(GUI.Button(new Rect(_logAreaRect.x,0, 50,15),"Clear")) {
             _logItems.Clear();
+            _simpleTreeView.Reload();
+            _dataString = "";
+            ServerAPILogRecorder.Clear();
+        }
+        if(GUI.Button(new Rect(_logAreaRect.x + 50,0, 50,15),"Reload")) {
+            _logItems.Clear();
+            _logItems = CreateData();
             _simpleTreeView.Reload();
             _dataString = "";
         }
