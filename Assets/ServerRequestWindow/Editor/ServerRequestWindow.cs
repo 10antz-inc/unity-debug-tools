@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using System;
+using System.IO;
 using System.Runtime.Serialization.Json;
 using HC.Common;
 using UnityEditor.PackageManager.Requests;
@@ -23,6 +24,7 @@ public class ServerRequestWindow : EditorWindow {
 
     [SerializeField]
     TreeViewState treeViewState;
+    
     ServerRequestLogArea _simpleTreeView;
     float _horizontalSplitHorizontalNorm = 0.5f;
     Rect _logAreaRect;
@@ -31,7 +33,10 @@ public class ServerRequestWindow : EditorWindow {
     float _topSpace = 15f;
     float _horizontalSplitX;
     bool _resizingHorizontalSplitter = false;
+    
     List<LogItem> _logItems = new List<LogItem>();
+
+    FileSystemWatcher _watcher = null;
 
     public List<LogItem> LogItems {
         get{return _logItems;}
@@ -48,6 +53,8 @@ public class ServerRequestWindow : EditorWindow {
         Debug.Log("Enable ServerRequestWindow");
         if (treeViewState == null)
             treeViewState = new TreeViewState();
+
+        ServerAPILogRecorder.onRecorded += OnDataRecorded;
         
         ServerAPILogRecorder.ReadFile();
 
@@ -55,6 +62,11 @@ public class ServerRequestWindow : EditorWindow {
         _simpleTreeView = new ServerRequestLogArea(treeViewState, this);
 
         ReshapeSubArea();
+    }
+
+    void OnDisable() {
+        Debug.Log("Disable ServerRequestWindow");
+        ServerAPILogRecorder.onRecorded -= OnDataRecorded;
     }
 
     List<LogItem> CreateData() {
@@ -158,5 +170,11 @@ public class ServerRequestWindow : EditorWindow {
 
     public void OnClickItem(int itemId) {
         _dataString = JsonFormatter.ToPrettyPrint(_logItems[itemId].jsonStr,JsonFormatter.IndentType.Space);
+    }
+
+    void OnDataRecorded(ServerAPILogRecorder.RecordData data) {
+        _logItems.Clear();
+        _logItems = CreateData();
+        _simpleTreeView.Reload();
     }
 }

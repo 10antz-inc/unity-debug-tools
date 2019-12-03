@@ -6,8 +6,10 @@ using System.Linq;
 using System;
 using System.Text;
 
-public static class ServerAPILogRecorder
-{
+public static class ServerAPILogRecorder {
+    public delegate void OnRecorded(RecordData data);
+    public static event OnRecorded onRecorded = null;
+    
     // jsonに含まれている,を一時的に置き換える文字
     const string COMMA_AVOID = "%%|%%";
     public enum Type {
@@ -22,7 +24,7 @@ public static class ServerAPILogRecorder
         public string json;
     }
     
-    static string saveLogPath = "ServerRequestWindow/Logs/ServerLogs.csv";
+    public static string saveLogPath { get;} = "ServerRequestWindow/Logs/ServerLogs.csv";
 
     public static List<RecordData> _dataList { get; private set; }
     static StreamWriter _writer;
@@ -33,7 +35,6 @@ public static class ServerAPILogRecorder
             return;
         }
         
-        Clear();
         ReadFile();
         
         string path = Application.dataPath + "/" + saveLogPath;
@@ -43,8 +44,11 @@ public static class ServerAPILogRecorder
     }
 
     public static void ReadFile() {
-        Clear();
-        
+        if (_dataList != null) {
+            _dataList.Clear();
+            _dataList = null;
+        }
+
         string path = Application.dataPath + "/" + saveLogPath;
         if (!File.Exists(path)) {
             File.Create(path).Close();
@@ -96,6 +100,10 @@ public static class ServerAPILogRecorder
             data.json.Replace(",",COMMA_AVOID));
         _writer.WriteLine(str);
         _dataList.Add(data);
+
+        if (onRecorded != null) {
+            onRecorded(data);
+        }
     }
 
     public static void Clear() {
