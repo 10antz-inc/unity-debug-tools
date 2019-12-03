@@ -12,6 +12,8 @@ public static class ServerAPILogRecorder {
     
     // jsonに含まれている,を一時的に置き換える文字
     const string COMMA_AVOID = "%%|%%";
+    // ログの保存上限数
+    const int MAX_DATA = 100;
     public enum Type {
         POST,
         RESPONCE,
@@ -101,9 +103,28 @@ public static class ServerAPILogRecorder {
         _writer.WriteLine(str);
         _dataList.Add(data);
 
+        if (_dataList.Count > MAX_DATA) {
+            DeleteFirstRecord();
+        }
+        
         if (onRecorded != null) {
             onRecorded(data);
         }
+    }
+
+    static void DeleteFirstRecord() {
+        if (_writer == null || _dataList.Count <= 0) {
+            return;
+        }
+
+        EndStream();
+        
+        string path = Application.dataPath + "/" + saveLogPath;
+        string[] lines = File.ReadAllLines(path);
+        lines = lines.Skip(1).ToArray();
+        File.WriteAllLines(path, lines);
+        
+        StartStream();
     }
 
     public static void Clear() {
