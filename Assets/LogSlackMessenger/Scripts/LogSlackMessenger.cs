@@ -213,8 +213,8 @@ namespace AppliDebugTool {
 			foreach(var logInfo in logInfoList) {
 				string style = "";
 				string type = logInfo.logType.ToString();
-				string logText = logInfo.logText;
-				string stackTrace = logInfo.stackTrace;
+				string logText = ReplaceSpecialCharacter(logInfo.logText);
+				string stackTrace = ReplaceSpecialCharacter(logInfo.stackTrace);
 				switch(logInfo.logType) {
 					case LogType.Assert:
 					case LogType.Error:
@@ -236,6 +236,18 @@ namespace AppliDebugTool {
 
 			return baseHtml;
 		}
+        
+        /// <summary>
+        /// 特殊文字を変換する
+        /// </summary>
+        private string ReplaceSpecialCharacter(string str) {
+	        str = str.Replace("&","&amp;");
+	        str = str.Replace("<","&lt;");
+	        str = str.Replace(">","&gt;");
+	        str = str.Replace("'", "&#39;");
+	        str = str.Replace("\"","&quot;");
+	        return str;
+        }
 
         /// <summary>
         /// Slackに情報を送信するためのメインルーチン
